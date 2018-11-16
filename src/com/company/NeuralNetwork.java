@@ -46,10 +46,12 @@ public class NeuralNetwork {
                     }
                     break;
                 case O:
-                    double weightedSum =0;
-                    for(int k=0; k<layers[i].getNeurons()[0].getWeights().length; k++)
-                        weightedSum += layers[i].getNeurons()[0].getWeights()[k]*layers[i-1].getNeurons()[k].getOutput();
-                    layers[i].getNeurons()[0].applyActivationFunction(weightedSum);
+                    for(int j=0; j<layers[i].getNeurons().length; j++) {
+                        double weightedSum = 0;
+                        for (int k = 0; k < layers[i].getNeurons()[0].getWeights().length; k++)
+                            weightedSum += layers[i].getNeurons()[j].getWeights()[k]*layers[i-1].getNeurons()[k].getOutput();
+                        layers[i].getNeurons()[j].applyActivationFunction(weightedSum);
+                    }
                     break;
             }
         }

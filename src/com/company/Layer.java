@@ -7,7 +7,8 @@ public class Layer {
     private Neuron[] neurons = null;
     private LayerType layerType;
 
-    public Neuron[] getNeurons() {
+    public Neuron[] getNeurons()
+    {
         return neurons;
     }
 
@@ -28,7 +29,8 @@ public class Layer {
                 break;
             case O:
                 neurons = new Neuron[NeuralNetwork.NUMB_OF_OUTPUT_NEURONS];
-                neurons[0] = new Neuron(layerType, neuralNetwork.getNumbOfHiddenNeurons());
+                IntStream.range(0, NeuralNetwork.NUMB_OF_OUTPUT_NEURONS).forEach(i->neurons[i] = new Neuron(layerType, neuralNetwork.getNumbOfHiddenNeurons()));
+                //neurons[0] = new Neuron(layerType, neuralNetwork.getNumbOfHiddenNeurons());
                 break;
         }
     }
