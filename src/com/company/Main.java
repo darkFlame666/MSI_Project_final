@@ -6,12 +6,12 @@ import java.io.InputStreamReader;
 import java.util.stream.IntStream;
 
 public class Main {
-    static int NUMB_OF_EPOCHS = 1000;
-    static double TRAINING_DATA[][][] = new double[][][] {{{1,0,0},{0,1,2}},
-                                                          {{1,0,1},{1,2,3}},
-                                                          {{1,1,0},{1,4,5}},
-                                                          {{1,1,1},{0,6,5}}};
-    public static void main(String[] args) throws NumberFormatException, IOException {
+    static int NUMB_OF_EPOCHS = 10000;
+    static double TRAINING_DATA[][][] = new double[][][] {{{1,0,0},{1,0,1}},
+                                                          {{1,0,1},{0,1,0}},
+                                                          {{1,1,0},{1,0,1}},
+                                                          {{1,1,1},{0,1,0}}};
+    public static void main(String[] args) throws NumberFormatException, IOException{
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("> Please enter # of neurons in the hidden layer");
         NeuralNetwork neuralNetwork = new NeuralNetwork(Integer.parseInt(bufferedReader.readLine()));
@@ -31,7 +31,7 @@ public class Main {
                     IntStream.range(0, NUMB_OF_EPOCHS).forEach(i->{
                         System.out.println("[epoch "+i+"]");
                         IntStream.range(0, TRAINING_DATA.length).forEach(j->
-                                System.out.println(neuralNetwork.forwardprop(Main.TRAINING_DATA[j][0]).backpropError(Main.TRAINING_DATA[j][1][0])));
+                                System.out.println(neuralNetwork.forwardprop(Main.TRAINING_DATA[j][0]).backpropError(Main.TRAINING_DATA[j][1])));
                     });
                     System.out.println("[done training]");
                     break;
@@ -46,8 +46,6 @@ public class Main {
     static void printResult(double[][] result){
         IntStream.range(0, TRAINING_DATA[0][0].length).forEach(x -> System.out.print("  Input "+x+"  |"));
         System.out.println("    Target Result   |   Result  ");
-        //System.out.println(TRAINING_DATA[0][1][1]+"     "+TRAINING_DATA[1][1][0]+"     "+TRAINING_DATA[2][1][0]+"     "+TRAINING_DATA[3][0][1]);
-        //System.out.println(TRAINING_DATA[0][1].length);
         IntStream.range(0, TRAINING_DATA[0][0].length).forEach(x -> System.out.print("--------------"));
         System.out.println("------------------------------");
         IntStream.range(0, TRAINING_DATA.length).forEach(i-> {

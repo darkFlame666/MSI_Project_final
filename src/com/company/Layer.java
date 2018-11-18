@@ -21,7 +21,8 @@ public class Layer {
         switch (layerType){
             case I:
                 neurons = new Neuron[NeuralNetwork.NUMB_OF_INPUT_NEURONS];
-                IntStream.range(0, NeuralNetwork.NUMB_OF_INPUT_NEURONS).forEach(i -> neurons[i] = new Neuron(layerType, 0));
+                IntStream.range(0, NeuralNetwork.NUMB_OF_INPUT_NEURONS).forEach(i ->
+                    neurons[i] = new Neuron(layerType, 0));
                 break;
             case H:
                 neurons = new Neuron[neuralNetwork.getNumbOfHiddenNeurons()];
@@ -30,7 +31,6 @@ public class Layer {
             case O:
                 neurons = new Neuron[NeuralNetwork.NUMB_OF_OUTPUT_NEURONS];
                 IntStream.range(0, NeuralNetwork.NUMB_OF_OUTPUT_NEURONS).forEach(i->neurons[i] = new Neuron(layerType, neuralNetwork.getNumbOfHiddenNeurons()));
-                //neurons[0] = new Neuron(layerType, neuralNetwork.getNumbOfHiddenNeurons());
                 break;
         }
     }

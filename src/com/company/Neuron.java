@@ -33,7 +33,8 @@ public class Neuron {
         if (layerType == Layer.LayerType.I)
             returnValue.append(String.format("%.2f", output)+")");
         else{
-            IntStream.range(0, weights.length).forEach(x-> returnValue.append(String.format("%.2f", weights[x])+", "));
+            IntStream.range(0, weights.length).forEach(x->
+                returnValue.append(String.format("%.2f", weights[x])+", "));
             if (layerType == Layer.LayerType.H)
                 returnValue.append(String.format("%.2f", output)+")");
             else

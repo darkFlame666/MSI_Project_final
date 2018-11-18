@@ -32,10 +32,10 @@ public class NeuralNetwork {
 
     public NeuralNetwork forwardprop (double input[]){
         for (int i=0; i<layers.length; i++){
-            switch (layers[i].getLayerType()){
+            switch (layers[i].getLayerType()) {
                 case I:
-                    for (int j=0; j<layers[i].getNeurons().length; j++)
-                        layers[i].getNeurons()[j].setOutput(input[j]);
+                    for (int j = 0; j < layers[i].getNeurons().length; j++)
+                    layers[i].getNeurons()[j].setOutput(input[j]);
                     break;
                 case H:
                     for (int j=0; j<layers[i].getNeurons().length; j++){
@@ -47,10 +47,10 @@ public class NeuralNetwork {
                     break;
                 case O:
                     for(int j=0; j<layers[i].getNeurons().length; j++) {
-                        double weightedSum = 0;
+                        double weightedSumm = 0;
                         for (int k = 0; k < layers[i].getNeurons()[0].getWeights().length; k++)
-                            weightedSum += layers[i].getNeurons()[j].getWeights()[k]*layers[i-1].getNeurons()[k].getOutput();
-                        layers[i].getNeurons()[j].applyActivationFunction(weightedSum);
+                            weightedSumm += layers[i].getNeurons()[j].getWeights()[k]*layers[i-1].getNeurons()[k].getOutput();
+                        layers[i].getNeurons()[j].applyActivationFunction(weightedSumm);
                     }
                     break;
             }
@@ -58,33 +58,22 @@ public class NeuralNetwork {
         return this;
     }
 
-    public NeuralNetwork backpropError(double targetResult){
+    public NeuralNetwork backpropError(double targetResult[]) {
         Neuron[] iNeuron = layers[0].getNeurons();
         Neuron[] hNeuron = layers[1].getNeurons();
-
-        Neuron[] oNeuron = layers[2].getNeurons();
-        for (int j=0; j<layers[2].getNeurons().length; j++) {
-            oNeuron[j].setError((targetResult - oNeuron[j].getOutput() * oNeuron[j].derivative()));
-            for(int k=0; k<oNeuron[0].getWeights().length; k++)
-                oNeuron[j].getWeights()[k] = oNeuron[j].getWeights()[k] + LEARNING_RATE * oNeuron[j].getError()*hNeuron[k].getOutput();
-        }
-        for (int i = 0; i<hNeuron.length; i++) {
-            for (int k = 0; k < oNeuron.length; k++) {
-                hNeuron[i].setError((oNeuron[k].getWeights()[i] * oNeuron[k].getError()) * hNeuron[i].derivative());
-                for (int j = 0; j < hNeuron[0].getWeights().length; j++)
-                    hNeuron[i].getWeights()[j] = hNeuron[i].getWeights()[j] + LEARNING_RATE * hNeuron[i].getError() * iNeuron[j].getOutput();
+        Neuron[] oNeurons = layers[layers.length - 1].getNeurons();
+            for (int i=0; i<oNeurons.length; i++) {
+                oNeurons[i].setError((targetResult[i] - oNeurons[i].getOutput()) * oNeurons[i].derivative());
             }
-        }
-        //Neuron oNeuron = layers[layers.length-1].getNeurons()[0];
-        //oNeuron.setError((targetResult - oNeuron.getOutput())*oNeuron.derivative());
-       // for (int j=0; j<oNeuron.getWeights().length; j++)
-           // oNeuron.getWeights()[j] = oNeuron.getWeights()[j] + LEARNING_RATE * oNeuron.getError()*hNeuron[j].getOutput();
-
-        //for (int i = 0; i<hNeuron.length; i++){
-          //  hNeuron[i].setError((oNeuron.getWeights()[i]*oNeuron.getError())*hNeuron[i].derivative());
-            //for (int j=0; j<hNeuron[0].getWeights().length; j++)
-              //  hNeuron[i].getWeights()[j] = hNeuron[i].getWeights()[j] + LEARNING_RATE * hNeuron[i].getError()*iNeuron[j].getOutput();
-        //}
+            for(int i=0; i<oNeurons.length; i++) {
+                for (int j = 0; j < oNeurons[i].getWeights().length; j++)
+                    oNeurons[i].getWeights()[j] = oNeurons[i].getWeights()[j] + LEARNING_RATE * oNeurons[i].getError() * hNeuron[j].getOutput();
+            }
+            for(int i=0; i<hNeuron.length; i++){
+                hNeuron[i].setError((oNeurons[0].getWeights()[i]*oNeurons[0].getError()+oNeurons[1].getWeights()[i]*oNeurons[1].getError()+oNeurons[2].getWeights()[i]*oNeurons[2].getError())*hNeuron[i].derivative());
+                    for (int j=0; j<hNeuron[0].getWeights().length; j++)
+                        hNeuron[i].getWeights()[j] = hNeuron[i].getWeights()[j] + LEARNING_RATE * hNeuron[i].getError()*iNeuron[j].getOutput();
+            }
         return this;
     }
 }
