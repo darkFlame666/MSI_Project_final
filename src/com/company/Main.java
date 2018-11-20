@@ -1,17 +1,18 @@
 package com.company;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.util.Scanner;
 import java.util.stream.IntStream;
 
 public class Main {
     static int NUMB_OF_EPOCHS = 10000;
-    static double TRAINING_DATA[][][] = new double[][][] {{{1,0,0},{1,0,1}},
-                                                          {{1,0,1},{0,1,0}},
-                                                          {{1,1,0},{1,0,1}},
-                                                          {{1,1,1},{0,1,0}}};
+    static double TRAINING_DATA[][][];
+   // static double TRAINING_DATA[][][] = new double[][][] {{{1,0,0},{1,0,1}},
+                                                          //{{1,0,1},{0,1,0}},
+                                                          //{{1,1,0},{1,0,1}},
+                                                          //{{1,1,1},{0,1,0}}};
     public static void main(String[] args) throws NumberFormatException, IOException{
+        TRAINING_DATA = functionArray(4,2,3);
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("> Please enter # of neurons in the hidden layer");
         NeuralNetwork neuralNetwork = new NeuralNetwork(Integer.parseInt(bufferedReader.readLine()));
@@ -52,5 +53,24 @@ public class Main {
             IntStream.range(0, TRAINING_DATA[0][0].length).forEach(j -> System.out.print("  "+TRAINING_DATA[i][0][j] + "    xx|"));
             System.out.print("  "+TRAINING_DATA[i][1][0] + "  "+TRAINING_DATA[i][1][1] +"  "+TRAINING_DATA[i][1][2]+"    kk|   "+String.format("%.5f",result[i][0])+" "+String.format("%.5f",result[i][1])+" "+String.format("%.5f",result[i][2])+"   \n");
         });
+    }
+    public static double [][][] functionArray (int row, int column, int position){
+        double [][][] Array = new double[row][column][position];
+        try{
+            Scanner sc = new Scanner(new BufferedReader( new FileReader("test.txt")));
+            while(sc.hasNextLine()) {
+                for(int i=0; i< Array.length; i++){
+                    for (int j=0; j<Array[0].length; j++){
+                        for(int z=0; z<Array[0][0].length; z++){
+                            Array[i][j][z] = Double.parseDouble(sc.nextLine());
+                        }
+                    }
+                }
+            }
+        } catch (FileNotFoundException ex){
+            ex.printStackTrace();
+        }
+        return Array;
+
     }
 }
