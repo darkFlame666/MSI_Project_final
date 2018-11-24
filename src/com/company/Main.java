@@ -2,40 +2,74 @@ package com.company;
 
 import java.io.*;
 import java.util.Scanner;
-import java.util.stream.IntStream;
 
 public class Main {
-    static int NUMB_OF_EPOCHS = 10000;
-    static double TRAINING_DATA[][][];
-   // static double TRAINING_DATA[][][] = new double[][][] {{{1,0,0},{1,0,1}},
-                                                          //{{1,0,1},{0,1,0}},
-                                                          //{{1,1,0},{1,0,1}},
-                                                          //{{1,1,1},{0,1,0}}};
+    static int NUMB_OF_EPOCHS;
+
     public static void main(String[] args) throws NumberFormatException, IOException{
-        TRAINING_DATA = functionArray(4,2,3);
+
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("> Please enter # of neurons in the hidden layer");
+        System.out.println("> Please enter number of inputs M of neural network 3/5/7");
+        Data data = new Data(Integer.parseInt(bufferedReader.readLine()));
+        System.out.println("> Please enter number of epochs I ");
+        NUMB_OF_EPOCHS = Integer.parseInt(bufferedReader.readLine());
+        System.out.println("> Please enter number of neurons N in the hidden layer ");
         NeuralNetwork neuralNetwork = new NeuralNetwork(Integer.parseInt(bufferedReader.readLine()));
         boolean flag = true;
         while(flag) {
-            System.out.println("> What do you want to do (run, train, exit) ?");
+            System.out.println("> What do you want to do (run, train, test, save, exit) ?");
             String command = bufferedReader.readLine();
             switch (command){
                 case "run":
-                    double[][] result = new double [Main.TRAINING_DATA.length][Main.TRAINING_DATA[0][1].length];
-                    IntStream.range(0, Main.TRAINING_DATA.length).forEach(i->
-                            IntStream.range(0, Main.TRAINING_DATA[0][1].length).forEach(j->
-                        result[i][j] = neuralNetwork.forwardprop(Main.TRAINING_DATA[i][0]).getLayers()[2].getNeurons()[j].getOutput()));
-                    printResult(result);
+                    double[][] result = new double [data.TRAINING_DATA.length][data.TRAINING_DATA[0][1].length];
+                    for(int i=0; i<data.TRAINING_DATA.length; i++){
+                        for(int j=0; j<data.TRAINING_DATA[0][1].length; j++){
+                            result[i][j] = neuralNetwork.forwardprop(data.TRAINING_DATA[i][0]).getLayers()[2].getNeurons()[j].getOutput();
+                        }
+                    }
+                    data.printResult(result);
                     break;
                 case "train":
-                    IntStream.range(0, NUMB_OF_EPOCHS).forEach(i->{
+                    neuralNetwork.getMSE_LIST().clear();
+                    neuralNetwork.getMSE_FUN1().clear();
+                    neuralNetwork.getMSE_FUN2().clear();
+                    neuralNetwork.getMSE_FUN3().clear();
+                    for(int i=0; i<NUMB_OF_EPOCHS; i++){
                         System.out.println("[epoch "+i+"]");
-                        IntStream.range(0, TRAINING_DATA.length).forEach(j->
-                                System.out.println(neuralNetwork.forwardprop(Main.TRAINING_DATA[j][0]).backpropError(Main.TRAINING_DATA[j][1])));
-                    });
+                        for(int j=0; j<data.TRAINING_DATA.length; j++){
+                            System.out.println(neuralNetwork.forwardprop(data.TRAINING_DATA[j][0]).backpropError(data.TRAINING_DATA[j][1]));
+                        }
+
+                    }
                     System.out.println("[done training]");
+                    System.out.println();
+                    //System.out.println("MSE OF ALL FUNCTIONS  =  "+neuralNetwork.MSE_Value(neuralNetwork.getMSE_LIST(), NUMB_OF_EPOCHS));
+                    System.out.println("MSE OF FIRST FUNCTIONS =   "+neuralNetwork.MSE_Value(neuralNetwork.getMSE_FUN1(), NUMB_OF_EPOCHS));
+                    System.out.println("MSE OF SECOND FUNCTIONS =   "+neuralNetwork.MSE_Value(neuralNetwork.getMSE_FUN2(), NUMB_OF_EPOCHS));
+                    System.out.println("MSE OF THIRD FUNCTIONS =   "+neuralNetwork.MSE_Value(neuralNetwork.getMSE_FUN3(), NUMB_OF_EPOCHS));
+                    System.out.println("NUMBER OF EPOCHS I = " + NUMB_OF_EPOCHS);
+                    System.out.println("NUMBER OF NEURONS IN HIDDEN LAYER N = "+neuralNetwork.getNumbOfHiddenNeurons());
+                    System.out.println("NUMBER OF INPUTS M = "+(data.TRAINING_DATA[0][0].length-1));
                     break;
+                case "test":
+                    double tab [][] = new double [data.TESTING_DATA.length][data.TESTING_DATA[0][1].length];
+                    for(int i=0; i<data.TESTING_DATA.length; i++){
+                        for(int j=0; j<data.TESTING_DATA[0][1].length; j++){
+                            tab[i][j] = neuralNetwork.forwardprop(data.TESTING_DATA[i][0]).getLayers()[2].getNeurons()[j].getOutput();
+                        }
+                    }
+                    for(int i=0; i<data.TESTING_DATA.length; i++){
+                        System.out.println("Sample "+i);
+                        for(int j=0; j<data.TESTING_DATA[0][1].length; j++){
+                            System.out.println("Out "+j+"=\t"+tab[i][j]);
+                        }
+                    }
+                    break;
+                case "save":
+                    saveData(neuralNetwork.MSE_Value(neuralNetwork.getMSE_FUN1(), NUMB_OF_EPOCHS), neuralNetwork.MSE_Value(neuralNetwork.getMSE_FUN2(), NUMB_OF_EPOCHS), neuralNetwork.MSE_Value(neuralNetwork.getMSE_FUN3(), NUMB_OF_EPOCHS), NUMB_OF_EPOCHS, neuralNetwork.getNumbOfHiddenNeurons(), data.TRAINING_DATA[0][0].length-1);
+                    System.out.println("Data successfully saved!");
+                    break;
+
                 case "exit":
                     flag = false;
                     break;
@@ -44,33 +78,14 @@ public class Main {
         System.exit(0);
     }
 
-    static void printResult(double[][] result){
-        IntStream.range(0, TRAINING_DATA[0][0].length).forEach(x -> System.out.print("  Input "+x+"  |"));
-        System.out.println("    Target Result   |   Result  ");
-        IntStream.range(0, TRAINING_DATA[0][0].length).forEach(x -> System.out.print("--------------"));
-        System.out.println("------------------------------");
-        IntStream.range(0, TRAINING_DATA.length).forEach(i-> {
-            IntStream.range(0, TRAINING_DATA[0][0].length).forEach(j -> System.out.print("  "+TRAINING_DATA[i][0][j] + "    xx|"));
-            System.out.print("  "+TRAINING_DATA[i][1][0] + "  "+TRAINING_DATA[i][1][1] +"  "+TRAINING_DATA[i][1][2]+"    kk|   "+String.format("%.5f",result[i][0])+" "+String.format("%.5f",result[i][1])+" "+String.format("%.5f",result[i][2])+"   \n");
-        });
-    }
-    public static double [][][] functionArray (int row, int column, int position){
-        double [][][] Array = new double[row][column][position];
-        try{
-            Scanner sc = new Scanner(new BufferedReader( new FileReader("test.txt")));
-            while(sc.hasNextLine()) {
-                for(int i=0; i< Array.length; i++){
-                    for (int j=0; j<Array[0].length; j++){
-                        for(int z=0; z<Array[0][0].length; z++){
-                            Array[i][j][z] = Double.parseDouble(sc.nextLine());
-                        }
-                    }
-                }
-            }
-        } catch (FileNotFoundException ex){
-            ex.printStackTrace();
+    public static void saveData (double MSEval1, double MSEval2, double MSEval3, int epochs, int hiddenNeurons, int inputs){
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("test.txt", true));
+            writer.append(MSEval1+"\t"+MSEval2+"\t"+MSEval3+"\t"+epochs+"\t"+hiddenNeurons+"\t"+inputs+"\n");
+            writer.close();
         }
-        return Array;
-
+        catch (IOException e){
+            e.printStackTrace();
+        }
     }
 }
