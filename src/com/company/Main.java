@@ -1,13 +1,11 @@
 package com.company;
 
 import java.io.*;
-import java.util.Scanner;
 
 public class Main {
     static int NUMB_OF_EPOCHS;
 
     public static void main(String[] args) throws NumberFormatException, IOException{
-
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("> Please enter number of inputs M of neural network 3/5/7");
         Data data = new Data(Integer.parseInt(bufferedReader.readLine()));

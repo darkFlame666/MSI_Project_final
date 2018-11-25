@@ -53,7 +53,6 @@ public class Neuron {
 
     public  void applyActivationFunction(double weightedSum){
         output = 1.0/(1+Math.exp(-1.0*weightedSum));
-        //output = 0.02*weightedSum;
     }
     public double derivative(){
         return output*(1.0-output);
